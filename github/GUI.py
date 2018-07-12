@@ -547,6 +547,7 @@ class Translation(Page):
         self.cap = cv2.VideoCapture(0)
         self.auto = True # auto or manual detection
         self.circle = []
+        self.flag = False
         super(Translation, self).__init__()
     def Draw(self, canvas, step):
         super(Translation, self).Draw(canvas, step)
@@ -648,19 +649,22 @@ class Translation(Page):
         ret, frame = self.cap.read()
         self.counter -= 1
 
-        if (self.auto == True):
-            frame, flag = OCVa.run(frame, self.TL, self.SL)
-        else:
-            frame, flag = OCVm.run(frame, self.TL, self.SL, self.circle)
-        if flag == True:
-            self.counter = 20
-            cv2.imwrite('frame1.jpg', frame)
-        else:
-            cv2.imwrite('frame.jpg', frame)
-        if (self.counter >= 0): # still display frame1.jpg
-            self.PILim = Image.open('frame1.jpg')
-        else:
-            self.PILim = Image.open('frame.jpg')
+        # if no translation section detected
+        if not self.flag:
+            if (self.auto == True):
+                frame, self.flag = OCVa.run(frame, self.TL, self.SL)
+            else:
+                frame, self.flag = OCVm.run(frame, self.TL, self.SL, self.circle)
+            if self.flag: # first detection
+                self.counter = 20
+            cv2img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            self.PILim = Image.fromarray(cv2img)
+        # second detection and beyond, until the counter is negative
+        elif self.counter < 0: # update self.PILim
+            self.flag = False
+            cv2img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            self.PILim = Image.fromarray(cv2img)
+        # draw the frame            
         self.photo = ImageTk.PhotoImage(image = self.PILim)
         canvas.create_image(400, 300, image = self.photo)
         # draw dots

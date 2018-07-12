@@ -53,8 +53,8 @@ def eliminateLandmark(textRange, radius):
     x1n, y1n = (x3 - x1) * r / diag13 + x1, (y3 - y1) * r / diag13 + y1
     x2n, y2n = (x0 - x2) * r / diag02 + x2, (y0 - y2) * r / diag02 + y2
     x3n, y3n = (x1 - x3) * r / diag13 + x3, (y1 - y3) * r / diag13 + y3
-    width = ((x1n - x0n) ** 2 + (y1n - y0n) ** 2) ** 0.5
-    height = ((x1n - x2n) ** 2 + (y1n - y2n) ** 2) ** 0.5
+    width = int(((x1n - x0n) ** 2 + (y1n - y0n) ** 2) ** 0.5)
+    height = int(((x1n - x2n) ** 2 + (y1n - y2n) ** 2) ** 0.5)
     return [(x0n, y0n), (x1n, y1n), (x2n, y2n), (x3n, y3n)], width, height
 
 def run(frame, TL, SL, circles):
